@@ -1,0 +1,39 @@
+.newsTitle {
+  display: inline;
+
+  color: #0d0d0d;
+  &:hover {
+    color: tomato;
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 767px) {
+  .Post {
+    & > div {
+      display: block !important;
+    }
+
+    .stats {
+      span {
+        &:not(:first-child) {
+          margin: 0;
+        }
+
+        &:after {
+          content: "" !important;
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .Post {
+    .header {
+      h4 {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
