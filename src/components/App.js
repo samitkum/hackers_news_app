@@ -13,6 +13,8 @@ import Footer from "./Footer/Footer.component";
 import DropdownBtn from "./Dropdown/DropDown.component";
 import RenderList from "./RenderList/RenderList.component";
 import Pagination from "./Pagination/Pagination.component";
+import localforage from "localforage";
+import { motion } from "framer-motion";
 
 // Libraries
 import moment from "moment";
@@ -81,6 +83,7 @@ class App extends React.Component {
             ],
             isLoading: false,
           }));
+
           return null;
         });
       })
@@ -90,8 +93,28 @@ class App extends React.Component {
     }
   };
 
-  componentDidMount() {
-    this.setStories();
+  async componentWillMount() {
+    const res = await localforage.getItem("posts").then((data) => data);
+    console.log(res);
+    if (res !== null) {
+      this.setState({
+        posts: res,
+        isLoading: false,
+      });
+    }
+  }
+
+  async componentDidMount() {
+    const res = await localforage.getItem("posts").then((data) => data);
+    if (!res || res === null) {
+      this.setStories();
+    } else {
+      console.log("using from local storage");
+    }
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    localforage.setItem("posts", nextState.posts);
   }
 
   componentDidUpdate(prevState) {
@@ -175,6 +198,7 @@ class App extends React.Component {
               .format("YYYY-MM-DD");
             return lastWeek <= post.date;
           });
+
           return postFilteredWeek;
         case "Past Month":
           let postFilteredMonth = currentPosts.filter((post) => {
@@ -310,73 +334,80 @@ class App extends React.Component {
             <Row>
               <Col sm={12} className="bg-grey">
                 <Navcustom />
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-around",
-                    padding: "15px",
-                    width: "80%",
-                    margin: "auto",
-                  }}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1, duration: 1 }}
                 >
-                  <Search
-                    searchTerm={this.state.searchTerm}
-                    onKeyUp={(e) => this.onKeyUp(e)}
-                  />
-                  <Row
-                    className="filter"
-                    style={{ display: "block-inline", minWidth: "10%" }}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-around",
+                      padding: "15px",
+                      width: "80%",
+                      margin: "auto",
+                    }}
                   >
-                    <Col sm={12} md={8} lg={6}>
-                      <div className="d-flex dropdowns">
-                        <p style={{ fontSize: "1rem", color: "#737373" }}>
-                          By{" "}
-                        </p>
-                        <DropdownBtn
-                          onClick={(e) => {
-                            this.setCurrentBy(e);
-                            this.orderBy(e);
-                          }}
-                          defaultValue={this.state.currentBy}
-                          dropChilds={this.state.searchBy}
-                        />
-                        <p
-                          style={{
-                            fontSize: "1rem",
-                            color: "#737373",
-                            marginLeft: "10px",
-                          }}
-                        >
-                          For{" "}
-                        </p>
-                        <DropdownBtn
-                          onClick={(e) => this.setLastPost(e)}
-                          defaultValue={this.state.lastPost}
-                          dropChilds={this.state.searchFor}
-                        />
-                      </div>
-                    </Col>
-                  </Row>
-                </div>
-                <Switch>
-                  <Route exact path="/">
-                    <RenderList
-                      currentList={this.state.currentList}
-                      renderLastPost={() => this.renderLastPosts()}
-                      lastPost={this.state.lastPost}
-                      posts={currentPosts}
+                    <Search
                       searchTerm={this.state.searchTerm}
+                      onKeyUp={(e) => this.onKeyUp(e)}
                     />
-                    <Pagination
-                      hitsPerPage={this.state.hitsPerPage}
-                      totalPosts={this.renderResultsNumber()}
-                      currentPage={this.state.currentPage}
-                      paginate={this.paginate}
-                      posts={currentPosts}
-                      style={{ width: "60%", margin: "auto" }}
-                    />
-                  </Route>
-                </Switch>
+                    <Row
+                      className="filter"
+                      style={{ display: "block-inline", minWidth: "10%" }}
+                    >
+                      <Col sm={12} md={8} lg={6}>
+                        <div className="d-flex dropdowns">
+                          <p style={{ fontSize: "1rem", color: "#737373" }}>
+                            By{" "}
+                          </p>
+                          <DropdownBtn
+                            onClick={(e) => {
+                              this.setCurrentBy(e);
+                              this.orderBy(e);
+                            }}
+                            defaultValue={this.state.currentBy}
+                            dropChilds={this.state.searchBy}
+                          />
+                          <p
+                            style={{
+                              fontSize: "1rem",
+                              color: "#737373",
+                              marginLeft: "10px",
+                            }}
+                          >
+                            For{" "}
+                          </p>
+                          <DropdownBtn
+                            onClick={(e) => this.setLastPost(e)}
+                            defaultValue={this.state.lastPost}
+                            dropChilds={this.state.searchFor}
+                          />
+                        </div>
+                      </Col>
+                    </Row>
+                  </div>
+                  <Switch>
+                    <Route exact path="/">
+                      <RenderList
+                        currentList={this.state.currentList}
+                        renderLastPost={() => this.renderLastPosts()}
+                        lastPost={this.state.lastPost}
+                        posts={currentPosts}
+                        searchTerm={this.state.searchTerm}
+                      />
+
+                      <Pagination
+                        hitsPerPage={this.state.hitsPerPage}
+                        totalPosts={this.renderResultsNumber()}
+                        currentPage={this.state.currentPage}
+                        paginate={this.paginate}
+                        posts={currentPosts}
+                        style={{ width: "60%", margin: "auto" }}
+                      />
+                    </Route>
+                  </Switch>
+                </motion.div>
               </Col>
               <Col sm={12} className="p-0">
                 <Footer />
