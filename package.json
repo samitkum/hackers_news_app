@@ -1,6 +1,5 @@
 {
   "name": "hacker_news_app",
-  "homepage": "git remote add origin https://github.com/samitkum/hackers_news_app.git",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
