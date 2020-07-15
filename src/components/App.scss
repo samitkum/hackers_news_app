@@ -38,6 +38,16 @@ a {
   display: block;
   overflow: hidden;
 }
+.searchDropContainer {
+  //display: flex;
+  justify-content: space-around;
+  padding: 15px;
+  width: 80%;
+  margin: auto;
+  .filter {
+    padding-top: 20px;
+  }
+}
 
 @media (max-width: 767px) {
   .pl-sm-7 {

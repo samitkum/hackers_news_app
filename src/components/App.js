@@ -340,13 +340,14 @@ class App extends React.Component {
                   transition={{ delay: 1, duration: 1 }}
                 >
                   <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-around",
-                      padding: "15px",
-                      width: "80%",
-                      margin: "auto",
-                    }}
+                    className="searchDropContainer"
+                    // style={{
+                    //   display: "flex",
+                    //   justifyContent: "space-around",
+                    //   padding: "15px",
+                    //   width: "80%",
+                    //   margin: "auto",
+                    // }}
                   >
                     <Search
                       searchTerm={this.state.searchTerm}
